@@ -1,0 +1,415 @@
+Data handling with R
+========================================================
+author: Hiroki Matsui
+css: R_presentation.css
+date: 20150416
+
+
+この資料は
+========================================================
+### 諸処の事情でR を使う必要が生じた時、
+### コードから逃げずに戦う基礎知識（ググるための知識）を得る事を目的にした内部資料です。
+### そのため、網羅性や正確性を一部欠く表現があります。
+### 正確・網羅的な情報はググる等して資料をあたる等しましょう。
+
+
+本日お伝えしたいこと。
+========================================================
+- なぜR でデータハンドリングを行うのか？
+- 他のソフトウェアとの比較
+- データの読み込み
+- 90年代R でデータハンドリング
+
+
+
+本日お伝えしたいこと。
+========================================================
+### なぜR でデータハンドリングを行うのか？
+- 他のソフトウェアとの比較
+- データの読み込み
+- 90年代R でデータハンドリング
+
+
+
+なぜR でデータハンドリングを行うのか？
+========================================================
+## <font color='red'>解析結果の再現性</font>
+### R でデータ解析するため。
+### SPSSのGUIではやりにくい処理をさせるため。
+
+解析結果の再現性
+========================================================
+## 解析結果の再現性を担保するには
+- Data　← Fixed data
+- Code ← CUI によるdata handling, 解析
+- Result ← Reporting を含めた出力
+
+
+本日お伝えしたいこと。
+========================================================
+- なぜR でデータハンドリングを行うのか？ 
+
+## 他のソフトウェアとの比較
+
+- データの読み込み
+- 90年代R でデータハンドリング
+
+
+
+教室内の他のソフトウェアとの比較
+========================================================
+## SPSS
+- GUI
+- シンタックスでCodeを保存
+- Data はHDD上
+
+## SAS
+- CUI
+- Code を保存
+- Data はHDD上
+
+*** 
+
+## R
+- CUI
+- Code を保存
+- Data はメモリ上
+
+## SQL 
+- CUI
+- Code を保存
+- Data はHDD上
+
+教室内の他のソフトウェアとの比較(個人的切り分け)
+========================================================
+- メモリに乗るデータ  
+
+  R で処理して解析
+- メモリに乗らないデータをShrinkして使う。  
+
+  SQL でハンドリングしてR に読み込む。
+
+- メモリに乗らないデータをそのまま使う（機械学習など）  
+
+  Python? 
+- その他諸々  
+  
+  Excel・Access・AWK・シェル芸・perl でテキスト処理・SASで解析・Hadoop廻そう....  
+  臨機応変に多分効率的な手段を選択。
+
+本日お伝えしたいこと。
+========================================================
+- なぜR でデータハンドリングを行うのか？ 
+- 他のソフトウェアとの比較
+
+## データの読み込み
+
+- 90年代R でデータハンドリング
+
+
+
+データの読み込み
+=========================================================
+以下のデータをダウンロードして下さい。  
+[http://u111u.info/k1dd](http://u111u.info/k1dd)
+
+データの読み込み
+=========================================================
+Rstudio を使うとデータの読み込みがGUI で出来ます。
+![](./Fig1.png)
+
+データの読み込み
+=========================================================
+class: small-code
+
+以下の様に書けます。
+```{r}
+data1 <- read.csv(# file 名
+                  file= "C:/Users/HEER_matsui/Desktop/data1.tsv", 
+                  # 1行目を列名にする。
+                  header = T,
+                  # tab 区切りのファイル
+                  sep = "\t",
+                  # 全てのカラムは文字列として読み込む。
+                  colClasses=rep("character",11))                 
+```
+
+データの読み込み
+=========================================================
+class: small-code
+URLからのデータ読み込みも可能です。
+例えば、[http://u111u.info/k14z](http://u111u.info/k14z)にあるCSVからデータを読み込めます。
+```{r}
+data2 <- read.csv(file= "http://u111u.info/k14z",
+                  header = T,
+                  colClasses=rep("character",12))   
+data3 <- read.csv(file= "http://u111u.info/k14F",
+                  header = T,
+                  colClasses=rep("character",8))   
+```
+
+データの読み込み
+=========================================================
+クリップボードからの読み込みも可能です。
+- この[ファイル](http://webpark1262.sakura.ne.jp/wordpress_2/wp-content/uploads/2015/04/clip.xlsx)をダウンロードしてください。
+- セルを選択してコピーして下さい。
+
+```{r eval=FALSE}
+data4 <- read.table("clipboard",header = T)
+```
+
+本日お伝えしたいこと。
+========================================================
+- なぜR でデータハンドリングを行うのか？ 
+- 他のソフトウェアとの比較
+- データの読み込み
+
+## 90年代R でデータハンドリング
+
+
+
+R のデータ形式
+========================================================
+- vector
+- matrix
+- list
+- data.frame
+
+R のデータ形式
+========================================================
+- vector
+- <font color="gray">matrix</font>
+- <font color="gray">list</font>
+- data.frame
+
+R のデータ形式
+========================================================
+class: small-code
+## vector
+```{r}
+vec1 <- c(1:3)
+vec1
+vec2 <- c("a","b","c")
+vec2
+vec3 <- c(T,F,T)
+vec3
+```
+
+R のデータ形式
+========================================================
+class: small-code
+## vector
+```{r}
+vec1[c(1,2)]
+vec2[c(T,T,F)]
+vec3[-1]
+```
+
+
+R のデータ形式
+========================================================
+class: small-code
+## data.frame
+```{r}
+temp_data <- data.frame(x1 =vec1, x2 = vec2,x3 =vec3)
+```
+
+R のデータ形式
+========================================================
+class: small-code
+## data.frame
+```{r}
+head(data1)
+head(data2)
+```
+
+R のデータ形式
+========================================================
+class: small-code
+## data.frame
+```{r}
+temp_data[1, ]
+temp_data[ ,1]
+```
+
+
+R のデータ形式
+========================================================
+class: small-code
+## data.frame
+```{r}
+data1[1:3, ]
+data1[1:3,c(2,3)]
+```
+
+R のデータ形式
+========================================================
+class: small-code
+## data.frame
+```{r}
+data1[1:3,"データ日"]
+data1$データ日[1:3]
+```
+
+
+R のデータフレーム操作
+========================================================
+class: small-code
+```{r}
+# カラム追加
+temp_data$x4 <- c(4:6)
+temp_data$x5 <- temp_data$x1 * temp_data$x4
+# 行の抽出
+temp_data$x5 == 4
+temp_data[temp_data$x5 == 4, ]
+```
+
+R のデータフレーム操作
+========================================================
+class: small-code
+```{r}
+# データのマージ
+temp_data_2 <- data.frame(x6 = c("a","b","d"), x7 = c("疾患A","疾患B","疾患D"))
+merge(x = temp_data, y =temp_data_2, by.x = "x2", by.y = "x6")
+merge(x = temp_data, y =temp_data_2, by.x = "x2", by.y = "x6",all = T)
+```
+
+R のデータフレーム操作
+========================================================
+class: small-code
+```{r}
+# データのマージ
+merge(x = temp_data, y =temp_data_2, by.x = "x2", by.y = "x6",all.x = T)
+merge(x = temp_data, y =temp_data_2, by.x = "x2", by.y = "x6",all.y = T)
+```
+
+演習
+========================================================
+### R を使ってデータハンドリングしてみましょう。
+### data1, data2, data3 を使って以下のデータを含むDPC病院に関するcsv を作りましょう。
+- 保険医療名称
+- 保険医療機関番号
+- 住所
+- 急性心筋梗塞の手術有り症例数
+- 急性心筋梗塞の手術無し症例数
+
+演習
+========================================================
+## data1
+[保険医療機関一覧](http://plaza.umin.ac.jp/~hsmp/index.html)  
+- 20110301時点医療機関一覧、医療機関加算届出一覧
+
+## data2, data3
+[http://www.mhlw.go.jp/bunya/iryouhoken/database/sinryo/dpc.html
+](http://www.mhlw.go.jp/bunya/iryouhoken/database/sinryo/dpc.html
+)  
+- 平成22年度DPC病院一覧（施設概要表より）
+- 平成23年度MDC05手術有無別症例数（疾患別・手術有無別・処置１有無別集計　ＭＤＣ０５より）
+
+
+演習(ヒント)
+========================================================
+class: small-code
+- data1には医科・歯科・薬局が含まれます。
+- data2にはDPC病院の医療機関コード（保健医療機関コードと本質的に同じ）と告示番号が含まれます。
+- data1の保険医療機関コードは頭2桁が都道府県番号を示します。
+- 都道府県コード一覧は[こちら](http://u111u.info/k1bc)
+```{r}
+x <- c("a","b","c")
+y <- c("A","B","C")
+paste0(x,y)
+```
+
+演習(ヒント)
+========================================================
+class: small-code
+- data3は、患者数０の病院が"-“になっている。これだと、集計が出来ない。
+```{r}
+x <- c("1","2","3","-")
+x <- as.numeric(x)
+x[is.na(x)] <- 0
+x 
+fun_chr_0 <- function(x){
+  x <- as.numeric(x)
+  x[is.na(x)] <- 0
+  return(x)
+  }
+
+```
+
+
+演習(解答例)
+========================================================
+class: small-code
+```{r warning=FALSE}
+data_hosp <- data1[data1$保険区分 == "医科", ]
+data_pref <- read.csv(file = "http://u111u.info/k1bc", colClasses = c(rep("character")))
+data_hosp_dpc <- merge(data2, data_pref, by.x = "都道府県", by.y = "都道府県名称")
+data_hosp_dpc$保険医療機関コード <- paste0(data_hosp_dpc$都道府県コード, data_hosp_dpc$医療機関コード)
+data_hosp_dpc_pt <- data3
+data_hosp_dpc_pt[,3] <- fun_chr_0(data_hosp_dpc_pt[,3])
+data_hosp_dpc_pt[,4] <- fun_chr_0(data_hosp_dpc_pt[,4])
+data_hosp_dpc_pt[,5] <- fun_chr_0(data_hosp_dpc_pt[,5])
+data_hosp_dpc_pt[,6] <- fun_chr_0(data_hosp_dpc_pt[,6])
+data_hosp_dpc_pt[,7] <- fun_chr_0(data_hosp_dpc_pt[,7])
+data_hosp_dpc_pt[,8] <- fun_chr_0(data_hosp_dpc_pt[,8])
+data <- merge(data_hosp_dpc, data_hosp_dpc_pt, by.x = "告示番号.2", by.y = "告示番号")
+data <- merge(data, data_hosp, by = "保険医療機関コード")
+data <- data[, c("施設名.x", "保険医療機関コード", "住所", "X97", "X99")]
+write.csv(data,"data.csv",row.names=F)
+```
+
+
+演習(解答例)
+========================================================
+class: small-code
+### まずは、医科の施設に絞る。
+```{r warning=FALSE}
+data_hosp <- data1[data1$保険区分 == "医科", ]
+table(data_hosp$保険区分)
+```
+
+演習(解答例)
+========================================================
+class: small-code
+### 次に、医療機関コードに都道府県情報を追加
+```{r warning=FALSE}
+data_pref <- read.csv(file = "http://u111u.info/k1bc", colClasses = c(rep("character")))
+data_hosp_dpc <- merge(data2, data_pref, by.x = "都道府県", by.y = "都道府県名称")
+data_hosp_dpc$保険医療機関コード <- paste0(data_hosp_dpc$都道府県コード, data_hosp_dpc$医療機関コード)
+head(data_hosp_dpc)
+```
+
+演習(解答例)
+========================================================
+class: small-code
+### 次に、"-" を0に変換
+```{r warning=FALSE}
+data_hosp_dpc_pt <- data3
+data_hosp_dpc_pt[,3] <- fun_chr_0(data_hosp_dpc_pt[,3])
+data_hosp_dpc_pt[,4] <- fun_chr_0(data_hosp_dpc_pt[,4])
+data_hosp_dpc_pt[,5] <- fun_chr_0(data_hosp_dpc_pt[,5])
+data_hosp_dpc_pt[,6] <- fun_chr_0(data_hosp_dpc_pt[,6])
+data_hosp_dpc_pt[,7] <- fun_chr_0(data_hosp_dpc_pt[,7])
+data_hosp_dpc_pt[,8] <- fun_chr_0(data_hosp_dpc_pt[,8])
+head(data_hosp_dpc_pt)
+```
+
+演習(解答例)
+========================================================
+class: small-code
+### データの突合
+```{r warning=FALSE}
+data <- merge(data_hosp_dpc, data_hosp_dpc_pt, by.x = "告示番号.2", by.y = "告示番号")
+data <- merge(data, data_hosp, by = "保険医療機関コード")
+data <- data[, c("施設名.x", "保険医療機関コード", "住所", "X97", "X99")]
+head(data)
+```
+
+演習(解答例)
+========================================================
+class: small-code
+### データの保存
+```{r warning=FALSE}
+write.csv(data,"data.csv",row.names=F)
+```
